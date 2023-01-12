@@ -2,17 +2,13 @@ import discord
 from discord import app_commands
 from src import responses
 from src import log
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
 
 logger = log.setup_logger(__name__)
 
+config = responses.get_config()
+
 isPrivate = False
 
-discord_channel_id = os.getenv("DISCORD_CHANNEL_ID")
-openai_key = os.getenv("OPENAI_KEY")
 
 class aclient(discord.Client):
     def __init__(self) -> None:
@@ -82,8 +78,8 @@ async def send_start_prompt(client):
                 prompt = f.read()
                 logger.info(f"Send starting prompt with size {len(prompt)}")
                 responseMessage = await responses.handle_response(prompt)
-                if (discord_channel_id):
-                    channel = client.get_channel(int(discord_channel_id))
+                if (config['discord_channel_id']):
+                    channel = client.get_channel(int(config['discord_channel_id']))
                     await channel.send(responseMessage)
             logger.info(f"Starting prompt response:{responseMessage}")
         else:
