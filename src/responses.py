@@ -1,24 +1,17 @@
-import openai
+import os
 import json
+import openai
 from asgiref.sync import sync_to_async
+from dotenv import load_dotenv
 
+# load environment variables from .env file
+load_dotenv()
 
-def get_config() -> dict:
-    import os
-    # get config.json path
-    config_dir = os.path.abspath(__file__ + "/../../")
-    config_name = 'config.json'
-    config_path = os.path.join(config_dir, config_name)
-
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-
-    return config
-
-config = get_config()
-openai.api_key = config['openAI_key']
+# read the OpenAI API key from the environment variables
+openai_key = os.environ.get('OPENAI_KEY')
 
 async def handle_response(message) -> str:
+    openai.api_key = openai_key
     response = await sync_to_async(openai.Completion.create)(
         model="text-davinci-003",
         prompt=message,
